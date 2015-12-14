@@ -5,6 +5,8 @@ import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 
 public class HandleScannedBarcodeTest {
@@ -23,8 +25,9 @@ public class HandleScannedBarcodeTest {
         process(new StringReader("12345"));
     }
 
-    private void process(StringReader source) {
-        barcodeScannedListener.onBarcode("12345");
+    private void process(StringReader source) throws IOException {
+        final String theOnlyLineOfInput = new BufferedReader(source).readLine();
+        barcodeScannedListener.onBarcode(theOnlyLineOfInput);
     }
 
     public interface BarcodeScannedListener {
