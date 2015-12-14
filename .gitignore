@@ -1,0 +1,8 @@
+# IDEA
+.idea/workspace.xml
+.idea/uiDesigner.xml
+
+# Gradle
+build/
+.gradle/
+
