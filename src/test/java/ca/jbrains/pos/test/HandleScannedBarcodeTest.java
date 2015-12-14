@@ -2,6 +2,7 @@ package ca.jbrains.pos.test;
 
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -34,10 +35,28 @@ public class HandleScannedBarcodeTest {
         process(new StringReader(""));
     }
 
+    @Test
+    public void manyBarcodes() throws Exception {
+        context.checking(new Expectations() {{
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 1::"));
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 2::"));
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 3::"));
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 4::"));
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 5::"));
+        }});
+
+        process(new StringReader(
+                "::barcode 1::\n"
+                        + "::barcode 2::\n"
+                        + "::barcode 3::\n"
+                        + "::barcode 4::\n"
+                        + "::barcode 5::"
+        ));
+    }
+
     private void process(StringReader source) throws IOException {
-        final String theOnlyLineOfInput = new BufferedReader(source).readLine();
-        if (theOnlyLineOfInput != null)
-            barcodeScannedListener.onBarcode(theOnlyLineOfInput);
+        final BufferedReader bufferedReader = new BufferedReader(source);
+        bufferedReader.lines().forEach(barcodeScannedListener::onBarcode);
     }
 
     public interface BarcodeScannedListener {
