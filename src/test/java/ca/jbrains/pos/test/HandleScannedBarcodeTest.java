@@ -25,9 +25,19 @@ public class HandleScannedBarcodeTest {
         process(new StringReader("12345"));
     }
 
+    @Test
+    public void noBarcodes() throws Exception {
+        context.checking(new Expectations() {{
+            never(barcodeScannedListener);
+        }});
+
+        process(new StringReader(""));
+    }
+
     private void process(StringReader source) throws IOException {
         final String theOnlyLineOfInput = new BufferedReader(source).readLine();
-        barcodeScannedListener.onBarcode(theOnlyLineOfInput);
+        if (theOnlyLineOfInput != null)
+            barcodeScannedListener.onBarcode(theOnlyLineOfInput);
     }
 
     public interface BarcodeScannedListener {
