@@ -2,7 +2,6 @@ package ca.jbrains.pos.test;
 
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -44,7 +43,6 @@ public class HandleScannedBarcodeTest {
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 4::"));
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 5::"));
         }});
-
         process(new StringReader(
                 "::barcode 1::\n"
                         + "::barcode 2::\n"
@@ -54,12 +52,31 @@ public class HandleScannedBarcodeTest {
         ));
     }
 
+    @Test
+    public void someEmptyBarcodes() throws Exception {
+        context.checking(new Expectations() {{
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 1::"));
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 2::"));
+            oneOf(barcodeScannedListener).onBarcode(with("::barcode 3::"));
+        }});
+
+        process(new StringReader(
+                "\n\n\n\r\n::barcode 1::\n\r\n\n\n"
+                        + "::barcode 2::\n\n\r\n"
+                        + "::barcode 3::\n\r\n"
+        ));
+    }
+
     private void process(StringReader source) throws IOException {
         final BufferedReader bufferedReader = new BufferedReader(source);
-        bufferedReader.lines().forEach(barcodeScannedListener::onBarcode);
+        bufferedReader.lines()
+                .filter((line) -> !line.isEmpty())
+                .forEach(barcodeScannedListener::onBarcode);
     }
 
     public interface BarcodeScannedListener {
+        // CONTRACT
+        // barcode is not empty
         void onBarcode(String barcode);
     }
 }
