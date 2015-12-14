@@ -6,3 +6,6 @@
 build/
 .gradle/
 
+# Java
+out/
+
