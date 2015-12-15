@@ -1,12 +1,12 @@
 package ca.jbrains.pos.test;
 
-import ca.jbrains.pos.test.SellOneItemControllerTest.Catalog;
-import ca.jbrains.pos.test.SellOneItemControllerTest.Price;
+import ca.jbrains.pos.Catalog;
+import ca.jbrains.pos.InMemoryCatalog;
+import ca.jbrains.pos.Price;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class FindPriceInMemoryCatalogTest extends FindPriceInCatalogContract {
 
@@ -28,18 +28,6 @@ public class FindPriceInMemoryCatalogTest extends FindPriceInCatalogContract {
             put("still not " + barcodeToAvoid, Price.cents(0));
             put("so totally not " + barcodeToAvoid, Price.cents(0));
         }});
-    }
-
-    public static class InMemoryCatalog implements Catalog {
-        private final Map<String, Price> pricesByBarcode;
-
-        public InMemoryCatalog(Map<String, Price> pricesByBarcode) {
-            this.pricesByBarcode = new HashMap(pricesByBarcode);
-        }
-
-        public Price findPrice(String barcode) {
-            return pricesByBarcode.get(barcode);
-        }
     }
 
     @Test

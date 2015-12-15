@@ -1,12 +1,12 @@
 package ca.jbrains.pos.test;
 
+import ca.jbrains.pos.BarcodeScannedListener;
+import ca.jbrains.pos.CommandProcessor;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.Reader;
 import java.io.StringReader;
 
 public class HandleScannedBarcodeTest {
@@ -45,7 +45,7 @@ public class HandleScannedBarcodeTest {
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 4::"));
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 5::"));
         }});
-        
+
         commandProcessor.processCommands(new StringReader(
                 "::barcode 1::\n"
                         + "::barcode 2::\n"
@@ -70,24 +70,4 @@ public class HandleScannedBarcodeTest {
         ));
     }
 
-    public static class CommandProcessor {
-        private final BarcodeScannedListener barcodeScannedListener;
-
-        public CommandProcessor(BarcodeScannedListener barcodeScannedListener) {
-            this.barcodeScannedListener = barcodeScannedListener;
-        }
-
-        private void processCommands(Reader source) {
-            final BufferedReader bufferedReader = new BufferedReader(source);
-            bufferedReader.lines()
-                    .filter((line) -> !line.isEmpty())
-                    .forEach(barcodeScannedListener::onBarcode);
-        }
-    }
-
-    public interface BarcodeScannedListener {
-        // CONTRACT
-        // barcode is not empty
-        void onBarcode(String barcode);
-    }
 }
