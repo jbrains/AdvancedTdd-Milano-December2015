@@ -34,11 +34,24 @@ public class FindPriceInMemoryCatalogTest extends FindPriceInCatalogContract {
         private final Map<String, Price> pricesByBarcode;
 
         public InMemoryCatalog(Map<String, Price> pricesByBarcode) {
-            this.pricesByBarcode = pricesByBarcode;
+            this.pricesByBarcode = new HashMap(pricesByBarcode);
         }
 
         public Price findPrice(String barcode) {
             return pricesByBarcode.get(barcode);
         }
+    }
+
+    @Test
+    public void changeAPriceBehindMyBack() throws Exception {
+        final Price originalPrice = Price.cents(1);
+        final HashMap<String, Price> pricesByBarcode = new HashMap<String, Price>() {{
+            put("12345", originalPrice);
+        }};
+
+        final InMemoryCatalog catalog = new InMemoryCatalog(pricesByBarcode);
+
+        pricesByBarcode.put("12345", Price.cents(2));
+        Assert.assertEquals(originalPrice, catalog.findPrice("12345"));
     }
 }
