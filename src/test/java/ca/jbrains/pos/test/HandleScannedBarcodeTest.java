@@ -6,7 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -16,6 +15,8 @@ public class HandleScannedBarcodeTest {
 
     private final BarcodeScannedListener barcodeScannedListener
             = context.mock(BarcodeScannedListener.class);
+    private final CommandProcessor commandProcessor
+            = new CommandProcessor(barcodeScannedListener);
 
     @Test
     public void oneBarcode() throws Exception {
@@ -23,7 +24,7 @@ public class HandleScannedBarcodeTest {
             oneOf(barcodeScannedListener).onBarcode(with("12345"));
         }});
 
-        process(new StringReader("12345"));
+        commandProcessor.processCommands(new StringReader("12345"));
     }
 
     @Test
@@ -32,7 +33,7 @@ public class HandleScannedBarcodeTest {
             never(barcodeScannedListener);
         }});
 
-        process(new StringReader(""));
+        commandProcessor.processCommands(new StringReader(""));
     }
 
     @Test
@@ -44,7 +45,8 @@ public class HandleScannedBarcodeTest {
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 4::"));
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 5::"));
         }});
-        process(new StringReader(
+        
+        commandProcessor.processCommands(new StringReader(
                 "::barcode 1::\n"
                         + "::barcode 2::\n"
                         + "::barcode 3::\n"
@@ -61,18 +63,26 @@ public class HandleScannedBarcodeTest {
             oneOf(barcodeScannedListener).onBarcode(with("::barcode 3::"));
         }});
 
-        process(new StringReader(
+        commandProcessor.processCommands(new StringReader(
                 "\n\n\n\r\n::barcode 1::\n\r\n\n\n"
                         + "::barcode 2::\n\n\r\n"
                         + "::barcode 3::\n\r\n"
         ));
     }
 
-    private void process(Reader source) throws IOException {
-        final BufferedReader bufferedReader = new BufferedReader(source);
-        bufferedReader.lines()
-                .filter((line) -> !line.isEmpty())
-                .forEach(barcodeScannedListener::onBarcode);
+    public static class CommandProcessor {
+        private final BarcodeScannedListener barcodeScannedListener;
+
+        public CommandProcessor(BarcodeScannedListener barcodeScannedListener) {
+            this.barcodeScannedListener = barcodeScannedListener;
+        }
+
+        private void processCommands(Reader source) {
+            final BufferedReader bufferedReader = new BufferedReader(source);
+            bufferedReader.lines()
+                    .filter((line) -> !line.isEmpty())
+                    .forEach(barcodeScannedListener::onBarcode);
+        }
     }
 
     public interface BarcodeScannedListener {
