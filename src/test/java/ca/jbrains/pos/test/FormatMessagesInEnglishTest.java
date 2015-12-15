@@ -1,5 +1,6 @@
 package ca.jbrains.pos.test;
 
+import ca.jbrains.pos.EnglishLanguageFormat;
 import ca.jbrains.pos.Price;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,13 +23,4 @@ public class FormatMessagesInEnglishTest {
         Assert.assertEquals("EUR 12.00", new EnglishLanguageFormat().formatPrice(Price.cents(1200)));
     }
 
-    public static class EnglishLanguageFormat {
-        public String formatProductNotFoundMessage(String barcode) {
-            return String.format("Product not found for %s", barcode);
-        }
-
-        public String formatPrice(Price price) {
-            return String.format("EUR %.2f", price.inEuro());
-        }
-    }
 }
