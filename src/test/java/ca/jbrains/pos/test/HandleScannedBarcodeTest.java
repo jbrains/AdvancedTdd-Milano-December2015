@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 public class HandleScannedBarcodeTest {
@@ -67,7 +68,7 @@ public class HandleScannedBarcodeTest {
         ));
     }
 
-    private void process(StringReader source) throws IOException {
+    private void process(Reader source) throws IOException {
         final BufferedReader bufferedReader = new BufferedReader(source);
         bufferedReader.lines()
                 .filter((line) -> !line.isEmpty())
